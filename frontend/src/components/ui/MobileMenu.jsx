@@ -77,8 +77,8 @@ const MobileMenu = ({ isOpen, onClose }) => {
         { icon: BookOpen, label: 'My Bookings', path: '/bookings' },
         { icon: Video, label: 'Reels', path: '/reels' },
         { icon: Heart, label: 'Saved Places', path: '/saved-places' },
-        { icon: Wallet, label: 'View Wallet', path: '/wallet' },
     ];
+
 
     const growthItems = [
         { icon: Gift, label: 'Refer & Earn', path: '/refer' },
@@ -152,10 +152,11 @@ const MobileMenu = ({ isOpen, onClose }) => {
                         animate={{ x: 0 }}
                         exit={{ x: '-100%' }}
                         transition={{ type: 'tween', ease: 'circOut', duration: 0.4 }}
-                        className="fixed top-0 left-0 h-full w-[85%] max-w-[300px] bg-white z-[101] overflow-y-auto overscroll-contain md:hidden shadow-2xl"
+                        className="fixed top-0 left-0 h-[100dvh] w-[85%] max-w-[300px] bg-white z-[101] overflow-y-auto overscroll-contain md:hidden shadow-2xl flex flex-col"
                         style={{ touchAction: 'pan-y' }}
                         onClick={(e) => e.stopPropagation()}
                     >
+
                         <div className="flex items-center justify-between p-5 pb-2">
                             <div className="flex flex-col items-start leading-none">
                                 <span className="text-2xl font-black tracking-tighter text-[#111827] flex items-center gap-0.5">

@@ -26,6 +26,8 @@ export const reelService = {
     getComments: (id, params = {}) =>
         api.get(`/reels/${id}/comments`, { params }).then((r) => r.data),
 
+    likeComment: (commentId) => api.post(`/reels/comment/${commentId}/like`).then((r) => r.data),
+
     share: (id) => api.post(`/reels/share/${id}`).then((r) => r.data),
 
     recordView: (id, watchedSeconds) =>

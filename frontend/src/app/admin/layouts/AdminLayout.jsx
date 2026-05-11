@@ -3,8 +3,9 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard, Users, Building2, Calendar, Wallet,
-    Settings, Bell, Search, LogOut, Menu, X, DollarSign, ClipboardCheck, Star, Tag, FileText, MessageSquare, CircleHelp, Home, LayoutGrid, CreditCard, Video
+    Settings, Bell, Search, LogOut, Menu, X, DollarSign, ClipboardCheck, Star, Tag, FileText, MessageSquare, CircleHelp, Home, LayoutGrid, CreditCard, Video, Image as ImageIcon
 } from 'lucide-react';
+
 
 import logo from '../../../assets/rokologin-removebg-preview.png';
 import useAdminStore from '../store/adminStore';
@@ -67,23 +68,41 @@ const AdminLayout = () => {
         navigate('/admin/login');
     };
 
-    const MENU_ITEMS = [
-        { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
-        { icon: Users, label: 'User Management', path: '/admin/users' },
-        { icon: Building2, label: 'Partner Management', path: '/admin/partners' },
-        { icon: Home, label: 'Property Management', path: '/admin/properties' },
-        { icon: LayoutGrid, label: 'Categories', path: '/admin/categories' },
-        { icon: Calendar, label: 'Bookings', path: '/admin/bookings' },
-        { icon: Bell, label: 'Notifications', path: '/admin/notifications', badge: unreadCount > 0 },
-        { icon: Wallet, label: 'Finance & Payouts', path: '/admin/finance' },
-        { icon: Tag, label: 'Offers & Coupons', path: '/admin/offers' },
-        { icon: FileText, label: 'Legal & Content', path: '/admin/legal' },
-        { icon: MessageSquare, label: 'Contact Messages', path: '/admin/contact-messages' },
-        { icon: CircleHelp, label: 'FAQs', path: '/admin/faqs' },
-        { icon: CreditCard, label: 'Subscriptions', path: '/admin/subscriptions' },
-        { icon: Video, label: 'Reel Analysis', path: '/admin/reel-analysis' },
-        { icon: Settings, label: 'Settings', path: '/admin/settings' },
+    const MENU_GROUPS = [
+        {
+            title: 'OVERVIEW',
+            items: [
+                { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
+            ]
+        },
+        {
+            title: 'MANAGEMENT',
+            items: [
+                { icon: Users, label: 'User Management', path: '/admin/users' },
+                { icon: Building2, label: 'Partner Management', path: '/admin/partners' },
+                { icon: Home, label: 'Property Management', path: '/admin/properties' },
+                { icon: LayoutGrid, label: 'Categories', path: '/admin/categories' },
+                { icon: Calendar, label: 'Bookings', path: '/admin/bookings' },
+                { icon: ImageIcon, label: 'Banner Management', path: '/admin/banners' },
+                { icon: Video, label: 'Reel Analysis', path: '/admin/reel-analysis' },
+                { icon: Star, label: 'Reviews', path: '/admin/reviews' },
+            ]
+        },
+        {
+            title: 'SYSTEM',
+            items: [
+                { icon: CreditCard, label: 'Subscriptions', path: '/admin/subscriptions' },
+                { icon: Wallet, label: 'Finance & Payouts', path: '/admin/finance' },
+                { icon: Tag, label: 'Offers & Coupons', path: '/admin/offers' },
+                { icon: Bell, label: 'Notifications', path: '/admin/notifications', badge: unreadCount > 0 },
+                { icon: FileText, label: 'Legal & Content', path: '/admin/legal' },
+                { icon: MessageSquare, label: 'Contact Messages', path: '/admin/contact-messages' },
+                { icon: CircleHelp, label: 'FAQs', path: '/admin/faqs' },
+                { icon: Settings, label: 'Settings', path: '/admin/settings' },
+            ]
+        }
     ];
+
 
     return (
         <div className="flex h-screen bg-gray-100 font-sans text-gray-900 overflow-hidden">
@@ -91,66 +110,93 @@ const AdminLayout = () => {
             {/* Sidebar */}
             <motion.aside
                 initial={false}
-                animate={{ width: isSidebarOpen ? 260 : 80 }}
-                className="bg-black text-white flex flex-col h-full border-r border-gray-800 shadow-2xl z-20 transition-all duration-300 relative"
+                animate={{ width: isSidebarOpen ? 280 : 80 }}
+                className="bg-white text-gray-900 flex flex-col h-full border-r border-gray-100 shadow-xl z-20 transition-all duration-300 relative"
             >
-                <div className={`py-6 flex flex-col items-center justify-center bg-white border-b border-gray-800 transition-all duration-300 ${!isSidebarOpen && 'py-4'}`}>
-                    <div className="flex flex-col items-start">
-                        <div className={`font-black tracking-tighter flex items-center transition-all duration-300 ${isSidebarOpen ? 'text-2xl' : 'text-[8px]'}`}>
-                            <span className="text-slate-900">HOOM</span>
-                            <span className="text-amber-600">ZO</span>
+                {/* Sidebar Header - Kitchen Appliance Style */}
+                <div className={`p-5 flex items-center justify-between bg-white border-b border-gray-50 transition-all duration-300 ${!isSidebarOpen && 'flex-col gap-4 p-4'}`}>
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0 shadow-sm">
+                            <img src={logo} alt="Logo" className="w-6 h-6 object-contain opacity-80" />
                         </div>
-                        {isSidebarOpen && <div className="w-8 h-1 bg-amber-600 rounded-full -mt-1 ml-0.5"></div>}
+                        {isSidebarOpen && (
+                            <div className="flex flex-col min-w-0">
+                                <h2 className="text-[13px] font-black text-gray-900 truncate tracking-tight uppercase">HoomZo Panel</h2>
+                                <p className="text-[9px] text-gray-400 font-bold tracking-widest">ADMIN PANEL</p>
+                            </div>
+                        )}
                     </div>
-                </div>
-
-                {/* Navigation */}
-                <nav className="flex-1 py-6 px-3 space-y-2 overflow-y-auto custom-scrollbar">
-                    {MENU_ITEMS.map((item) => {
-                        const isActive = location.pathname.startsWith(item.path);
-                        return (
-                            <Link
-                                key={item.path}
-                                to={item.path}
-                                className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all group relative text-sm font-medium ${isActive
-                                    ? 'bg-white text-black shadow-lg shadow-gray-900/10'
-                                    : 'text-gray-400 hover:bg-gray-900 hover:text-white'
-                                    }`}
-                            >
-                                <item.icon size={20} className={`shrink-0 ${isActive ? 'text-black' : 'text-gray-400 group-hover:text-white'}`} />
-                                {isSidebarOpen && (
-                                    <motion.span
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        className="whitespace-nowrap flex-1 truncate"
-                                    >
-                                        {item.label}
-                                    </motion.span>
-                                )}
-                                {item.badge && isSidebarOpen && (
-                                    <span className="ml-auto w-2 h-2 bg-red-500 rounded-full shrink-0"></span>
-                                )}
-                            </Link>
-                        );
-                    })}
-                </nav>
-
-                {/* Footer / Toggle */}
-                <div className="p-4 border-t border-gray-800">
+                    
+                    {/* Toggle Button Moved to Top */}
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="w-full flex items-center justify-center p-2 rounded-lg hover:bg-gray-900 text-gray-400 hover:text-white transition-colors"
+                        className={`p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-900 transition-colors ${!isSidebarOpen && 'mt-2'}`}
                     >
-                        {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+                        {isSidebarOpen ? <X size={18} /> : <Menu size={18} />}
                     </button>
+                </div>
+
+
+                {/* Navigation with Groups */}
+                <nav className="flex-1 py-4 px-4 space-y-6 overflow-y-auto custom-scrollbar">
+                    {MENU_GROUPS.map((group, gIdx) => (
+                        <div key={gIdx} className="space-y-2">
+                            {isSidebarOpen && (
+                                <h4 className="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+                                    {group.title}
+                                </h4>
+                            )}
+                            <div className="space-y-1">
+                                {group.items.map((item) => {
+                                    const isActive = item.path === '/admin/properties'
+                                        ? location.pathname === item.path || location.pathname.startsWith('/admin/properties/')
+                                        : location.pathname.startsWith(item.path);
+                                    return (
+
+                                        <Link
+                                            key={item.path}
+                                            to={item.path}
+                                            className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all group relative text-[13px] font-medium tracking-tight ${isActive
+                                                ? 'bg-black text-white shadow-xl shadow-gray-900/10 font-semibold'
+                                                : 'text-slate-500 hover:bg-gray-50 hover:text-gray-900'
+                                                }`}
+                                        >
+
+
+                                            <item.icon size={18} className={`shrink-0 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-900'}`} />
+                                            {isSidebarOpen && (
+                                                <motion.span
+                                                    initial={{ opacity: 0, x: -5 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    className="whitespace-nowrap flex-1 truncate"
+                                                >
+                                                    {item.label}
+                                                </motion.span>
+                                            )}
+                                            {item.badge && isSidebarOpen && (
+                                                <span className="ml-auto w-2 h-2 bg-red-500 rounded-full shrink-0"></span>
+                                            )}
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ))}
+                </nav>
+
+
+                {/* Footer / Logout Only */}
+                <div className="p-4 border-t border-gray-100 bg-gray-50/30">
                     <button
                         onClick={handleLogout}
-                        className={`mt-2 w-full flex items-center gap-3 p-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors ${!isSidebarOpen && 'justify-center'}`}
+                        className={`w-full flex items-center gap-3 p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors font-bold text-[13px] ${!isSidebarOpen && 'justify-center'}`}
                     >
-                        <LogOut size={20} />
+                        <LogOut size={18} />
                         {isSidebarOpen && <span>Logout</span>}
                     </button>
                 </div>
+
+
             </motion.aside>
 
             {/* Main Content Area */}

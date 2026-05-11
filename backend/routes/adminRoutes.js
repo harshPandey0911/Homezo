@@ -34,7 +34,8 @@ import {
   markAllAdminNotificationsRead,
   deleteAdminNotifications,
   getFinanceStats,
-  getReelAnalysis
+  getReelAnalysis,
+  createAdminProperty
 } from '../controllers/adminController.js';
 import { protect, authorizedRoles } from '../middlewares/authMiddleware.js';
 
@@ -55,7 +56,9 @@ router.get('/finance', getFinanceStats);
 router.get('/users', getAllUsers);
 router.get('/partners', getAllPartners);
 router.get('/hotels', getAllHotels);
+router.post('/properties', createAdminProperty);
 router.get('/bookings', getAllBookings);
+
 router.get('/property-requests', getPropertyRequests);
 router.put('/hotel-status', updateHotelStatus);
 router.put('/update-hotel-status', updateHotelStatus);

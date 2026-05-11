@@ -230,7 +230,30 @@ const adminService = {
   getReelAnalysis: async () => {
     const response = await axiosInstance.get('/admin/reel-analysis');
     return response.data;
+  },
+  // Banner Management
+  getAllBanners: async () => {
+    const response = await axiosInstance.get('/banners/admin');
+    return response.data;
+  },
+  createBanner: async (data) => {
+    const response = await axiosInstance.post('/banners', data);
+    return response.data;
+  },
+  updateBanner: async (id, data) => {
+    const response = await axiosInstance.put(`/banners/${id}`, data);
+    return response.data;
+  },
+  deleteBanner: async (id) => {
+    const response = await axiosInstance.delete(`/banners/${id}`);
+    return response.data;
+  },
+  createProperty: async (data) => {
+    const response = await axiosInstance.post('/admin/properties', data);
+    return response.data;
   }
 };
+
+
 
 export default adminService;

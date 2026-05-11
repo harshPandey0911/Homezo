@@ -35,9 +35,7 @@ const TopNavbar = () => {
                 <Link to="/bookings" className="text-gray-500 font-bold text-sm hover:text-emerald-600 transition tracking-tight">
                     Bookings
                 </Link>
-                <Link to="/wallet" className="text-gray-500 font-bold text-sm hover:text-emerald-600 transition tracking-tight">
-                    Wallet
-                </Link>
+
                 <Link to="/refer" className="text-gray-500 font-bold text-sm hover:text-emerald-600 transition tracking-tight">
                     Refer & Earn
                 </Link>

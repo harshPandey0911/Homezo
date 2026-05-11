@@ -8,6 +8,7 @@ import {
   toggleLike,
   addComment,
   getComments,
+  toggleCommentLike,
   shareReel,
   recordView,
   getReelById,
@@ -33,6 +34,7 @@ router.get('/:id', optionalProtect, getReelById);
 router.post('/like/:id', protect, toggleLike);
 router.post('/comment/:id', protect, addComment);
 router.get('/:id/comments', optionalProtect, getComments);
+router.post('/comment/:id/like', protect, toggleCommentLike);
 router.post('/share/:id', protect, shareReel);
 router.post('/:id/view', optionalProtect, recordView);
 router.delete('/:id', protect, deleteReel);

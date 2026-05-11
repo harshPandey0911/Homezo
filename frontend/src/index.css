@@ -1,5 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
+
 
 @theme {
   --color-background: #F8FAFC;
@@ -17,7 +18,8 @@
   --color-honey: #F59E0B;
   --color-cardWhite: #FFFFFF;
 
-  --font-sans: "Poppins", sans-serif;
+  --font-sans: "Inter", sans-serif;
+
 
   --radius-xl: 16px;
   --radius-2xl: 20px;

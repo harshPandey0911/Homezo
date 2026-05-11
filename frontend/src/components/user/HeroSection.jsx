@@ -5,14 +5,16 @@ import logo from '../../assets/rokologin-removebg-preview.png';
 import MobileMenu from '../../components/ui/MobileMenu';
 import { useNavigate } from 'react-router-dom';
 import walletService from '../../services/walletService';
+import BannerCarousel from './BannerCarousel';
 
-const HeroSection = ({ theme, selectedType }) => {
+
+const HeroSection = ({ theme, selectedType, onSearch }) => {
     const accentColor = theme?.accent || '#10B981';
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [placeholderIndex, setPlaceholderIndex] = useState(0);
     const [isSticky, setIsSticky] = useState(false);
-    const [walletBalance, setWalletBalance] = useState(0);
+
 
     const categoryContent = {
         'All': "Find your space — PG/Co-Living, Rent, Buy & Plots. Your home, your way.",
@@ -32,22 +34,7 @@ const HeroSection = ({ theme, selectedType }) => {
         "Search near Red Square..."
     ];
 
-    useEffect(() => {
-        const fetchWallet = async () => {
-            try {
-                const user = JSON.parse(localStorage.getItem('user'));
-                if (user) {
-                    const walletData = await walletService.getWallet();
-                    if (walletData.success && walletData.wallet) {
-                        setWalletBalance(walletData.wallet.balance);
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to fetch wallet', error);
-            }
-        };
-        fetchWallet();
-    }, []);
+
 
     // Placeholder Rotation
     useEffect(() => {
@@ -67,8 +54,20 @@ const HeroSection = ({ theme, selectedType }) => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const handleSearchClick = () => {
-        navigate('/search');
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const handleSearch = (e) => {
+        if (e) e.preventDefault();
+        if (searchQuery.trim()) {
+            if (onSearch) {
+                onSearch(searchQuery.trim());
+                // Scroll to property section if it exists
+                const section = document.getElementById('admin-properties-section');
+                if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                navigate(`/search?search=${encodeURIComponent(searchQuery.trim())}`);
+            }
+        }
     };
 
     return (
@@ -100,27 +99,9 @@ const HeroSection = ({ theme, selectedType }) => {
 
                 <div className="flex-1" />
 
-                {/* Wallet Balance Display */}
-                <button
-                    onClick={() => navigate('/wallet')}
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-400/20 to-emerald-500/10 backdrop-blur-md border border-emerald-300/25 shadow-lg shadow-emerald-900/10 active:scale-95 transition-all duration-300 hover:from-emerald-400/30 hover:to-emerald-500/20"
-                >
-                    <div className="w-6 h-6 bg-gradient-to-br from-emerald-300 to-emerald-500 rounded-lg flex items-center justify-center shadow-md shadow-emerald-500/30">
-                        <Wallet size={12} className="text-white" />
-                    </div>
-                    <div className="flex flex-col items-start leading-none">
-                        <span className="text-[8px] font-bold text-amber-200/80 uppercase tracking-wider">Wallet</span>
-                        <span className="text-[11px] font-extrabold text-white">
-                            {new Intl.NumberFormat('en-IN', {
-                                style: 'currency',
-                                currency: 'INR',
-                                minimumFractionDigits: 0,
-                                maximumFractionDigits: 0
-                            }).format(walletBalance)}
-                        </span>
-                    </div>
-                </button>
+                <div className="flex-1" />
             </div>
+
 
             {/* Tagline - project related (hidden on mobile) */}
             <div className="hidden md:block text-center text-white/95 text-sm md:text-lg font-medium drop-shadow-md px-2 max-w-xl mx-auto">
@@ -137,64 +118,64 @@ const HeroSection = ({ theme, selectedType }) => {
                 </AnimatePresence>
             </div>
 
-            {/* 2. Search Bar - Sticky Logic with smooth animation */}
-            <motion.div
-                layout
-                className={`
-                    w-full z-50
-                    ${isSticky
-                        ? 'fixed top-0 md:top-24 left-0 right-0 p-3 bg-white/95 backdrop-blur-xl shadow-lg border-b border-gray-100/50'
-                        : 'relative mt-2 md:mt-4'}
-                `}
-            >
+            {/* Banner Carousel as the main visual */}
+            <div className="relative w-full">
+                <BannerCarousel />
+                
+                {/* 2. Search Bar - Overlay Logic */}
                 <motion.div
                     layout
-                    onClick={handleSearchClick}
+                    className={`
+                        w-full z-50 px-4 md:px-8
+                        ${isSticky
+                            ? 'fixed top-0 md:top-24 left-0 right-0 p-3 bg-white/95 backdrop-blur-xl shadow-lg border-b border-gray-100/50'
+                            : 'absolute -bottom-6 left-1/2 -translate-x-1/2 w-[90%] md:w-[80%]'}
+                    `}
+                >
+
+                <form
+                    onSubmit={handleSearch}
+                    target="_self"
                     className={`
                         w-full mx-auto max-w-7xl
                         ${isSticky
-                            ? 'h-10 rounded-full shadow-inner'
+                            ? 'h-10 rounded-full shadow-inner bg-gray-50/50'
                             : 'h-12 md:h-14 rounded-2xl shadow-xl shadow-emerald-900/5 border border-white/40 bg-white/95 backdrop-blur-md'}
                         flex items-center 
                         px-3 md:px-4
                         gap-2 md:gap-3
                         relative
                         overflow-hidden
-                        cursor-pointer
                         transition-all duration-300
                     `}
                 >
-                    <Search size={18} style={{ color: accentColor }} className="z-10 md:w-6 md:h-6" />
+                    <Search size={18} style={{ color: accentColor }} className="z-10 md:w-6 md:h-6 shrink-0" />
 
-                    <div className="flex-1 h-full flex items-center bg-transparent outline-none font-medium z-20 relative text-xs md:text-sm" style={{ color: accentColor }}>
-                        {/* Input simulated via div/text */}
-                    </div>
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder={placeholders[placeholderIndex]}
+                        className="flex-1 h-full bg-transparent outline-none font-bold text-xs md:text-sm placeholder:text-gray-400 placeholder:font-medium z-20"
+                        style={{ color: '#111827' }}
+                    />
 
-                    <div className="absolute left-9 right-10 md:left-12 md:right-12 h-full flex items-center pointer-events-none z-0">
-                        <AnimatePresence mode="wait">
-                            <motion.span
-                                key={placeholderIndex}
-                                initial={{ y: 15, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                exit={{ y: -15, opacity: 0 }}
-                                transition={{ duration: 0.4, ease: "easeOut" }}
-                                className="text-gray-400 font-normal text-xs md:text-sm absolute w-full truncate"
-                            >
-                                {placeholders[placeholderIndex]}
-                            </motion.span>
-                        </AnimatePresence>
-                    </div>
-
-                    {/* Filter Icon */}
-                    <button className="p-1.5 rounded-lg bg-gray-50/50 hover:bg-white transition-colors z-10">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="4" y1="6" x2="20" y2="6"></line>
-                            <line x1="4" y1="12" x2="20" y2="12"></line>
-                            <line x1="4" y1="18" x2="12" y2="18"></line>
-                        </svg>
+                    {/* Filter Icon / Search Button */}
+                    <button 
+                        type="submit"
+                        className="p-2 md:px-5 md:py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white transition-all z-10 flex items-center gap-2 shadow-lg shadow-emerald-900/10 active:scale-95"
+                    >
+                        <span className="hidden md:inline text-xs font-black uppercase tracking-wider">Search</span>
+                        <Search size={16} className="md:hidden" />
                     </button>
-                </motion.div>
+                </form>
             </motion.div>
+            </div>
+
+
+            {/* Spacer for the absolute positioned search bar (non-sticky mode) */}
+            {!isSticky && <div className="h-4" />}
+
 
             {/* Placeholder Spacer only when sticky to prevent content jump */}
             {isSticky && (

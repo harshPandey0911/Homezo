@@ -19,6 +19,24 @@ export const propertyService = {
     }
   },
 
+  getAdminPropertiesByLocation: async (params) => {
+    try {
+      const response = await api.get('/properties/admin-added', { params });
+      return handleResponse(response);
+    } catch (error) {
+      return handleError(error);
+    }
+  },
+
+  getAdminPropertyCities: async () => {
+    try {
+      const response = await api.get('/properties/admin-cities');
+      return handleResponse(response);
+    } catch (error) {
+      return handleError(error);
+    }
+  },
+
   // Helper to get location
   getCurrentLocation: () => {
     return new Promise((resolve, reject) => {

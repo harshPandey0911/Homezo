@@ -18,6 +18,10 @@ const reelCommentSchema = new mongoose.Schema(
       trim: true,
       maxlength: 300,
     },
+    likesCount: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

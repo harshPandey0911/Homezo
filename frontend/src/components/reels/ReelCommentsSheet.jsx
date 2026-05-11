@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send } from 'lucide-react';
+import { X, Send, Heart } from 'lucide-react';
 import { reelService } from '../../services/reelService';
 
 export default function ReelCommentsSheet({ isOpen, onClose, reel, onCommentAdded }) {
@@ -37,6 +37,40 @@ export default function ReelCommentsSheet({ isOpen, onClose, reel, onCommentAdde
   useEffect(() => {
     if (isOpen && reel?._id) loadComments();
   }, [isOpen, reel?._id]);
+
+  const handleCommentLike = async (commentId) => {
+    setComments((prev) =>
+      prev.map((c) => {
+        if (c._id !== commentId) return c;
+        const liked = !c.likedByMe;
+        return {
+          ...c,
+          likedByMe: liked,
+          likesCount: Math.max(0, (c.likesCount || 0) + (liked ? 1 : -1)),
+        };
+      })
+    );
+    try {
+      const res = await reelService.likeComment(commentId);
+      setComments((prev) =>
+        prev.map((c) =>
+          c._id === commentId ? { ...c, likedByMe: res.liked, likesCount: res.likesCount } : c
+        )
+      );
+    } catch (err) {
+      setComments((prev) =>
+        prev.map((c) => {
+          if (c._id !== commentId) return c;
+          const liked = !c.likedByMe;
+          return {
+            ...c,
+            likedByMe: liked,
+            likesCount: Math.max(0, (c.likesCount || 0) + (liked ? 1 : -1)),
+          };
+        })
+      );
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -116,6 +150,20 @@ export default function ReelCommentsSheet({ isOpen, onClose, reel, onCommentAdde
                           {c.user?.name || 'User'}
                         </p>
                         <p className="text-sm text-gray-700 break-words">{c.text}</p>
+                      </div>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <button
+                          type="button"
+                          onClick={() => handleCommentLike(c._id)}
+                          className={`p-1.5 rounded-full transition-colors ${c.likedByMe ? 'text-red-500' : 'text-gray-400 hover:bg-gray-100'}`}
+                        >
+                          <Heart size={16} className={c.likedByMe ? 'fill-current' : ''} />
+                        </button>
+                        {c.likesCount > 0 && (
+                          <span className="text-[10px] font-bold text-gray-500">
+                            {c.likesCount}
+                          </span>
+                        )}
                       </div>
                     </li>
                   ))}

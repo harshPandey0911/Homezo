@@ -4,8 +4,9 @@ import { Link } from 'react-router-dom';
 import {
     Building2, Search, Filter, MoreVertical, MapPin,
     CheckCircle, XCircle, Clock, Star, ShieldAlert, Trash2, Edit, Eye, Loader2,
-    ChevronLeft, ChevronRight, Download
+    ChevronLeft, ChevronRight, Download, Plus
 } from 'lucide-react';
+
 import ConfirmationModal from '../components/ConfirmationModal';
 import adminService from '../../../services/adminService';
 import { categoryService } from '../../../services/categoryService';
@@ -207,7 +208,14 @@ const AdminProperties = () => {
                     >
                         <Download size={14} /> Export CSV
                     </button>
+                    <Link
+                        to="/admin/properties/add"
+                        className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg text-[10px] font-bold uppercase hover:bg-gray-800 transition-colors shadow-lg shadow-black/10"
+                    >
+                        <Plus size={14} /> Add Property
+                    </Link>
                 </div>
+
             </div>
 
             <div className="bg-white p-4 border border-gray-200 rounded-2xl shadow-sm flex flex-col md:flex-row gap-4 items-center">

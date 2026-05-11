@@ -67,11 +67,11 @@ const propertySchema = new mongoose.Schema({
   description: String,
   shortDescription: String,
 
-  // OWNER
+  // OWNER (optional for admin-added properties)
   partnerId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Partner",
-    required: true
+    ref: 'Partner',
+    default: null
   },
 
   // LOCATION
@@ -95,7 +95,8 @@ const propertySchema = new mongoose.Schema({
   },
 
   // MEDIA
-  coverImage: { type: String, required: true },
+  coverImage: { type: String, default: '' },
+
   propertyImages: [String],
 
   // AMENITIES (PROPERTY LEVEL)
@@ -189,7 +190,9 @@ const propertySchema = new mongoose.Schema({
   isUrgent: { type: Boolean, default: false },
   isNegotiable: { type: Boolean, default: false },
   virtualTourLink: String,
+  isAddedByAdmin: { type: Boolean, default: false },
   availabilityStatus: { type: String, enum: ['Available', 'Sold', 'Rented'], default: 'Available' },
+
 
   // STATUS
   status: {

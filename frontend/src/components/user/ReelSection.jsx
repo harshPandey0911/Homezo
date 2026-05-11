@@ -94,21 +94,15 @@ const ReelSection = ({ category }) => {
     const [reels, setReels] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const normalizedCategory = (cat) => {
-        if (!cat || cat === 'All') return 'All';
-        if (cat.toLowerCase().includes('pg')) return 'PG';
-        if (cat.toLowerCase().includes('rent')) return 'Rent';
-        if (cat.toLowerCase().includes('buy')) return 'Buy';
-        if (cat.toLowerCase().includes('plot')) return 'Plot';
-        return 'General';
-    };
 
     useEffect(() => {
         const fetchReels = async () => {
             setLoading(true);
             try {
-                const cat = normalizedCategory(category);
-                const res = await reelService.getFeed({ category: cat, limit: 10 });
+                // Show all reels on the home page regardless of category tab 
+                // to ensure maximum visibility of new content as requested.
+                const res = await reelService.getFeed({ category: 'All', limit: 20 });
+                console.log('REEL_DEBUG: Fetched reels count:', res.reels?.length, res.reels);
                 setReels(res.reels || []);
             } catch (err) {
                 console.error("Failed to fetch reels for section:", err);
@@ -117,7 +111,7 @@ const ReelSection = ({ category }) => {
             }
         };
         fetchReels();
-    }, [category]);
+    }, []); // Only fetch on mount
 
     if (loading) {
         return (

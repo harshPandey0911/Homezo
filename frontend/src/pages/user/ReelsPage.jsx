@@ -7,7 +7,7 @@ import { reelService } from '../../services/reelService';
 import { isFlutterApp, pickVideo } from '../../utils/flutterBridge';
 import toast from 'react-hot-toast';
 
-const MAX_DURATION_SEC = 10;
+const MAX_DURATION_SEC = 30;
 const MAX_SIZE_MB = 20;
 const MAX_CAPTION_LENGTH = 500;
 
@@ -36,8 +36,9 @@ export default function ReelsPage() {
       setLoadingMore(true);
     } else setLoading(true);
     try {
-      const res = await reelService.getFeed(cursor ? { cursor } : {});
+      const res = await reelService.getFeed(cursor ? { cursor, category: 'All', limit: 20 } : { category: 'All', limit: 20 });
       const list = res.reels || [];
+      console.log('REELS_PAGE_DEBUG:', list.length, list);
       if (cursor) {
         setReels((prev) => [...prev, ...list]);
       } else {
@@ -64,7 +65,12 @@ export default function ReelsPage() {
     reelService.recordView(reelId, 3).catch(() => { });
   }, []);
 
+  const likeLockRef = useRef({});
+
   const handleLikeToggle = useCallback(async (reelId) => {
+    if (likeLockRef.current[reelId]) return;
+    likeLockRef.current[reelId] = true;
+
     setReels((prev) =>
       prev.map((r) => {
         if (r._id !== reelId) return r;
@@ -72,10 +78,11 @@ export default function ReelsPage() {
         return {
           ...r,
           likedByMe: liked,
-          likesCount: (r.likesCount || 0) + (liked ? 1 : -1),
+          likesCount: Math.max(0, (r.likesCount || 0) + (liked ? 1 : -1)),
         };
       })
     );
+
     try {
       const res = await reelService.like(reelId);
       setReels((prev) =>
@@ -84,17 +91,21 @@ export default function ReelsPage() {
         )
       );
     } catch (err) {
+      // Revert on error
       setReels((prev) =>
         prev.map((r) => {
           if (r._id !== reelId) return r;
+          const liked = !r.likedByMe;
           return {
             ...r,
-            likedByMe: !r.likedByMe,
-            likesCount: (r.likesCount || 0) + (r.likedByMe ? -1 : 1),
+            likedByMe: liked,
+            likesCount: Math.max(0, (r.likesCount || 0) + (liked ? 1 : -1)),
           };
         })
       );
       toast.error('Failed to update like');
+    } finally {
+      likeLockRef.current[reelId] = false;
     }
   }, []);
 
@@ -216,6 +227,16 @@ export default function ReelsPage() {
         await navigator.clipboard.writeText(url).catch(() => { });
         toast.success('Link copied to clipboard');
       }
+    }
+  }, []);
+
+  const handleDeleteReel = useCallback(async (reelId) => {
+    try {
+      await reelService.deleteReel(reelId);
+      setReels((prev) => prev.filter((r) => r._id !== reelId));
+      toast.success('Reel deleted');
+    } catch (err) {
+      toast.error('Failed to delete reel');
     }
   }, []);
 
@@ -414,28 +435,25 @@ export default function ReelsPage() {
   }
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black md:max-w-md md:mx-auto">
+    <div className="fixed inset-0 z-[100] bg-black md:max-w-md md:mx-auto overflow-hidden overscroll-none">
       <ReelsTopBar />
       <div
         ref={containerRef}
-        className="h-[100dvh] overflow-y-auto snap-y snap-mandatory scroll-smooth no-scrollbar"
-        style={{ scrollSnapType: 'y mandatory', touchAction: 'pan-y' }}
+        className="h-full w-full overflow-y-auto snap-y snap-proximity scroll-smooth no-scrollbar"
+        style={{ scrollSnapType: 'y proximity', overscrollBehaviorY: 'contain' }}
       >
         {reels.map((reel, index) => (
-          <div
+          <ReelCard
             key={reel._id}
-            data-reel-index={index}
-            className="h-dvh min-h-dvh snap-start snap-always"
-          >
-            <ReelCard
-              reel={reel}
-              isActive={activeIndex === index}
-              onLikeToggle={handleLikeToggle}
-              onCommentClick={handleCommentClick}
-              onShareClick={handleShareClick}
-              onViewed={handleViewed}
-            />
-          </div>
+            reel={reel}
+            index={index}
+            isActive={activeIndex === index}
+            onLikeToggle={handleLikeToggle}
+            onCommentClick={handleCommentClick}
+            onShareClick={handleShareClick}
+            onViewed={handleViewed}
+            onDelete={handleDeleteReel}
+          />
         ))}
         {loadingMore && (
           <div className="h-20 flex items-center justify-center">

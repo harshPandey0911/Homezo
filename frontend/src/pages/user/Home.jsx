@@ -8,7 +8,9 @@ import CollectionSection from '../../components/user/CollectionSection';
 import ReelSection from '../../components/user/ReelSection';
 import LatestProjectsBanner from '../../components/user/LatestProjectsBanner';
 import RecommendedSellers from '../../components/user/RecommendedSellers';
+import AdminPropertiesSection from '../../components/user/AdminPropertiesSection';
 import { categoryService } from '../../services/categoryService';
+
 
 // Category Theme Map - Professional palettes inspired by Housing.com
 const THEME_MAP = {
@@ -48,6 +50,7 @@ const Home = () => {
     const [selectedType, setSelectedType] = useState({ id: null, label: 'All' });
     const [pgFilters, setPgFilters] = useState({ gender: undefined, occupancy: undefined, foodIncluded: undefined });
     const [sectionIds, setSectionIds] = useState({ pg: null, rent: null, buy: null, plot: null });
+    const [homeSearchCity, setHomeSearchCity] = useState("");
 
     // Fetch Category IDs for the homepage sections
     useEffect(() => {
@@ -136,7 +139,11 @@ const Home = () => {
 
                 {/* Content on top */}
                 <div className="relative z-[2] flex flex-col min-h-[280px] md:min-h-[340px]">
-                    <HeroSection theme={activeTheme} selectedType={selectedType} />
+                    <HeroSection 
+                        theme={activeTheme} 
+                        selectedType={selectedType} 
+                        onSearch={(city) => setHomeSearchCity(city)}
+                    />
 
                     {/* Small gap between search bar and category (mobile); minimal on desktop */}
                     <div className="pt-0 flex-shrink-0 md:pt-1 md:min-h-0" />
@@ -153,6 +160,12 @@ const Home = () => {
             </div>
 
             <ExclusiveOffers />
+
+            {/* Admin Curated Properties - Location Based */}
+            <div className="max-w-7xl mx-auto">
+                <AdminPropertiesSection searchCity={homeSearchCity} />
+            </div>
+
 
             <div className="mt-2 max-w-7xl mx-auto">
                 {(!selectedType.id || selectedType.label === 'All') ? (

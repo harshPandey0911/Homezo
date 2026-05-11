@@ -1,18 +1,24 @@
 import React, { useRef, useEffect, useCallback, memo } from 'react';
-import { Heart, MessageCircle, Share2, Volume2, VolumeX } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Volume2, VolumeX, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const ReelCard = memo(function ReelCard({
   reel,
+  index,
   isActive,
   onLikeToggle,
   onCommentClick,
   onShareClick,
   onViewed,
+  onDelete,
 }) {
   const videoRef = useRef(null);
   const viewReported = useRef(false);
   const [muted, setMuted] = React.useState(true);
+
+  // Get current user from localStorage
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const isOwner = currentUser._id === (reel.user?._id || reel.user);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -48,8 +54,8 @@ const ReelCard = memo(function ReelCard({
 
   return (
     <div
-      className="relative w-full h-full min-h-dvh snap-start snap-always flex items-end justify-center bg-black"
-      onDoubleClick={handleDoubleTap}
+      data-reel-index={index}
+      className="relative w-full h-dvh snap-start flex items-end justify-center bg-black"
     >
       <video
         ref={videoRef}
@@ -108,6 +114,21 @@ const ReelCard = memo(function ReelCard({
           </button>
           <span className="text-xs font-bold text-white">{reel.sharesCount ?? 0}</span>
         </div>
+        {isOwner && (
+          <div className="flex flex-col items-center gap-1">
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm('Delete this reel?')) {
+                  onDelete(reel._id);
+                }
+              }}
+              className="p-2 rounded-full bg-red-500/20 backdrop-blur-sm text-red-500 border border-red-500/30"
+            >
+              <Trash2 size={24} />
+            </button>
+          </div>
+        )}
         <div className="mt-2">
           <div className="w-10 h-10 rounded-full border-2 border-white overflow-hidden bg-gray-700 flex items-center justify-center">
             {user.profileImage ? (

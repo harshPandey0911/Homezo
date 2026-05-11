@@ -343,7 +343,39 @@ export const getAllHotels = async (req, res) => {
   }
 };
 
+export const createAdminProperty = async (req, res) => {
+  try {
+    const propertyData = req.body;
+
+    // Admin properties are auto-approved and live
+    propertyData.status = 'approved';
+    propertyData.isLive = true;
+    propertyData.isAddedByAdmin = true;
+    // partnerId is optional — null for admin-added properties
+    propertyData.partnerId = null;
+
+    if (!propertyData.propertyName || !propertyData.propertyType) {
+      return res.status(400).json({ success: false, message: 'Property name and type are required' });
+    }
+
+    // Ensure location has coordinates for MongoDB 2dsphere index
+    if (!propertyData.location || !propertyData.location.coordinates) {
+      propertyData.location = {
+        type: 'Point',
+        coordinates: [0, 0]
+      };
+    }
+
+    const newProperty = await Property.create(propertyData);
+    res.status(201).json({ success: true, property: newProperty });
+  } catch (error) {
+    console.error('Create Admin Property Error:', error);
+    res.status(500).json({ success: false, message: error.message || 'Server error creating property' });
+  }
+};
+
 export const getAllBookings = async (req, res) => {
+
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;

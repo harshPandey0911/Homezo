@@ -929,3 +929,64 @@ export const getRecommendedSellers = async (req, res) => {
   }
 };
 
+export const getAdminPropertiesByLocation = async (req, res) => {
+  try {
+    const { city, state } = req.query;
+    const query = { 
+      isAddedByAdmin: true, 
+      status: 'approved', 
+      isLive: true 
+    };
+
+    if (city) {
+      query['address.city'] = { $regex: new RegExp(city, 'i') };
+    }
+    if (state) {
+      query['address.state'] = { $regex: new RegExp(state, 'i') };
+    }
+
+    const properties = await Property.find(query).sort({ createdAt: -1 });
+    res.status(200).json({ success: true, properties });
+  } catch (error) {
+    console.error('Get Admin Properties By Location Error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Returns all distinct cities where admin has added live properties
+export const getAdminPropertyCities = async (req, res) => {
+  try {
+    const result = await Property.aggregate([
+      {
+        $match: {
+          isAddedByAdmin: true,
+          status: 'approved',
+          isLive: true,
+          'address.city': { $exists: true, $ne: '', $ne: null }
+        }
+      },
+      {
+        $group: {
+          _id: '$address.city',
+          state: { $first: '$address.state' },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { count: -1 } },
+      {
+        $project: {
+          _id: 0,
+          city: '$_id',
+          state: 1,
+          count: 1
+        }
+      }
+    ]);
+
+    res.status(200).json({ success: true, cities: result });
+  } catch (error) {
+    console.error('Get Admin Property Cities Error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+

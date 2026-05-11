@@ -63,6 +63,8 @@ const AdminSettings = React.lazy(() => import('./app/admin/pages/AdminSettings')
 const AdminOffers = React.lazy(() => import('./app/admin/pages/AdminOffers'));
 const AdminProtectedRoute = React.lazy(() => import('./app/admin/AdminProtectedRoute'));
 const AdminProperties = React.lazy(() => import('./app/admin/pages/AdminProperties'));
+const AdminAddProperty = React.lazy(() => import('./app/admin/pages/AdminAddProperty'));
+
 const AdminLegalPages = React.lazy(() => import('./app/admin/pages/AdminLegalPages'));
 const AdminContactMessages = React.lazy(() => import('./app/admin/pages/AdminContactMessages'));
 const AdminNotifications = React.lazy(() => import('./app/admin/pages/AdminNotifications'));
@@ -70,6 +72,8 @@ const AdminFaqs = React.lazy(() => import('./app/admin/pages/AdminFaqs'));
 const AdminCategories = React.lazy(() => import('./app/admin/pages/AdminCategories'));
 const AdminSubscriptions = React.lazy(() => import('./app/admin/pages/AdminSubscriptions'));
 const AdminReelAnalysis = React.lazy(() => import('./app/admin/pages/AdminReelAnalysis'));
+const AdminBanners = React.lazy(() => import('./app/admin/pages/AdminBanners'));
+
 
 // Lazy Imports - Partner Pages
 const HotelLogin = React.lazy(() => import('./pages/auth/HotelLoginPage'));
@@ -461,13 +465,17 @@ function App() {
                 <Route path="contact-messages" element={<AdminContactMessages />} />
                 <Route path="settings" element={<AdminSettings />} />
                 <Route path="properties" element={<AdminProperties />} />
+                <Route path="properties/add" element={<AdminAddProperty />} />
                 <Route path="properties/:id" element={<AdminHotelDetail />} />
+
                 <Route path="offers" element={<AdminOffers />} />
                 <Route path="notifications" element={<AdminNotifications />} />
                 <Route path="faqs" element={<AdminFaqs />} />
                 <Route path="categories" element={<AdminCategories />} />
                 <Route path="subscriptions" element={<AdminSubscriptions />} />
                 <Route path="reel-analysis" element={<AdminReelAnalysis />} />
+                <Route path="banners" element={<AdminBanners />} />
+
               </Route>
             </Route>
 
