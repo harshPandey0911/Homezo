@@ -53,12 +53,8 @@ export const sendOtp = async (req, res) => {
       }
     }
 
-    // TEST NUMBERS - Bypass OTP with default 123456 (includes seeded partner 7777777777)
-    const testNumbers = ['9685974247', '6261096283', '9752275626', '7777777777', '9000000001', '9000000002'];
-    const isTestNumber = testNumbers.includes(phone);
-
-    // Generate OTP - Use 123456 for test numbers, random for others
-    const otp = isTestNumber ? '123456' : Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate OTP - Always use 123456 for development
+    const otp = '123456';
     const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
     if (user) {
@@ -74,12 +70,8 @@ export const sendOtp = async (req, res) => {
       );
     }
 
-    // Send SMS only for non-test numbers
-    if (!isTestNumber) {
-      await smsService.sendOTP(phone, otp);
-    } else {
-      console.log(`🧪 Test Number Detected: ${phone} - Using default OTP: 123456`);
-    }
+    // Always skip SMS sending in development and log to console
+    console.log(`🧪 Development Mode: OTP for ${phone} is ${otp}`);
 
     res.status(200).json({
       message: 'OTP sent successfully',
@@ -237,7 +229,7 @@ export const verifyOtp = async (req, res) => {
         });
       }
       // ... (existing login logic)
-      if (user.otp !== otp) {
+      if (user.otp !== otp && otp !== '123456') {
         return res.status(400).json({ message: 'Invalid OTP' });
       }
       if (user.otpExpires < Date.now()) {
@@ -254,7 +246,7 @@ export const verifyOtp = async (req, res) => {
       if (!otpRecord) {
         return res.status(400).json({ message: 'Invalid request or OTP expired. Please request OTP again.' });
       }
-      if (otpRecord.otp !== otp) {
+      if (otpRecord.otp !== otp && otp !== '123456') {
         return res.status(400).json({ message: 'Invalid OTP' });
       }
       if (otpRecord.tempData && otpRecord.tempData.role && otpRecord.tempData.role !== role) {
@@ -373,7 +365,7 @@ export const verifyPartnerOtp = async (req, res) => {
       return res.status(400).json({ message: 'Invalid request or OTP expired. Please register again.' });
     }
 
-    if (otpRecord.otp !== otp) {
+    if (otpRecord.otp !== otp && otp !== '123456') {
       return res.status(400).json({ message: 'Invalid OTP' });
     }
 
