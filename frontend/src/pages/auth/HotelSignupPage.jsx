@@ -55,7 +55,6 @@ const steps = [
 ];
 
 const HotelSignup = () => {
-    useLenis();
     const navigate = useNavigate();
     const { currentStep, nextStep, prevStep, formData, setStep } = usePartnerStore();
     const [error, setError] = useState('');
@@ -160,9 +159,9 @@ const HotelSignup = () => {
     };
 
     return (
-        <div className="h-screen overflow-hidden bg-white text-[#003836] flex flex-col font-sans selection:bg-[#004F4D] selection:text-white">
+        <div className="min-h-screen bg-white text-[#003836] flex flex-col font-sans selection:bg-[#004F4D] selection:text-white overflow-x-hidden">
             {/* Top Bar */}
-            <header className="absolute top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md z-50 px-4 flex items-center justify-between border-b border-gray-100">
+            <header className="sticky top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md z-50 px-4 flex items-center justify-between border-b border-gray-100">
                 <button
                     onClick={handleBack}
                     className={`p-2 rounded-full transition-colors ${currentStep === 1 ? 'opacity-20 cursor-not-allowed' : 'hover:bg-gray-100'}`}
@@ -171,24 +170,24 @@ const HotelSignup = () => {
                     <ArrowLeft size={20} className="text-[#003836]" />
                 </button>
                 <div className="flex flex-col items-center">
-                    <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">Step {currentStep} of {steps.length}</span>
+                    <span className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Step {currentStep} of {steps.length}</span>
                     <span className="text-xs md:text-sm font-bold text-[#003836] truncate">{steps[currentStepIndex]?.title}</span>
                 </div>
                 <button onClick={() => navigate('/hotel/login')} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <X size={20} className="text-[#003836]" />
                 </button>
+
+                {/* Progress Bar (Nested for sticky) */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gray-100 h-[2px]">
+                    <div
+                        className="h-full bg-[#004F4D] transition-all duration-500 ease-out"
+                        style={{ width: `${progress}%` }}
+                    />
+                </div>
             </header>
 
-            {/* Progress Bar */}
-            <div className="absolute top-16 left-0 right-0 z-40 bg-gray-100 h-1">
-                <div
-                    className="h-full bg-[#004F4D] transition-all duration-500 ease-out"
-                    style={{ width: `${progress}%` }}
-                />
-            </div>
-
-            {/* Main Content Area - Scrollable */}
-            <main className="flex-1 overflow-y-auto pt-24 pb-32 px-4 md:px-0 scroll-smooth">
+            {/* Main Content Area */}
+            <main className="flex-1 pt-8 pb-32 px-4 md:px-0">
                 <div className="max-w-lg mx-auto w-full">
                     <div className="mb-6 md:text-center px-1">
                         <h1 className="text-2xl md:text-3xl font-black mb-1 leading-tight">{steps[currentStepIndex]?.title}</h1>
@@ -218,7 +217,7 @@ const HotelSignup = () => {
             </main>
 
             {/* Bottom Action Bar */}
-            <footer className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 md:p-6 z-50 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+            <footer className="sticky bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-100 p-4 md:p-6 z-50 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
                 <div className="max-w-lg mx-auto flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
                         <button
@@ -256,7 +255,7 @@ const HotelSignup = () => {
                     </div>
                 </div>
                 {error && (
-                    <div className="absolute top-0 left-0 right-0 flex justify-center w-full px-4 transform -translate-y-[120%]">
+                    <div className="absolute top-0 left-0 right-0 flex justify-center w-full px-4 transform -translate-y-[120%] pointer-events-none">
                         <div className="bg-red-500 text-white text-[10px] md:text-sm font-bold px-4 py-2 rounded-full shadow-lg animate-bounce text-center break-words max-w-full">
                             {error}
                         </div>
